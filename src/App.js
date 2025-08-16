@@ -67,6 +67,7 @@ export default function App() {
       setError("Please enter at least 3 characters to search.");
       return;
     }
+    handleCloseMovie();
     fetchMovies();
     return () => {
       controller.abort(); // Cleanup the fetch request on component unmount
