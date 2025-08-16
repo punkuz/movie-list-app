@@ -1,0 +1,13 @@
+export { default as Box } from './Box';
+export { default as ErrorMessage } from './ErrorMessage';
+export { default as Loader } from './Loader';
+export { default as Main } from './Main';
+export { default as Movie } from './Movie';
+export { default as MoviesList } from './MoviesList';
+export { default as NavBar } from './NavBar';
+export { default as Search } from './Search';
+export { default as SelectedMovieDetails } from './SelectedMovieDetails';
+export { default as Total } from './Total';
+export { default as WatchedMovie } from './WatchedMovie';
+export { default as WatchedMoviesList } from './WatchedMoviesList';
+export { default as WatchedSummary } from './WatchedSummary';
