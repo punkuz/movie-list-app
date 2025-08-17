@@ -10,17 +10,14 @@ import WatchedMoviesList from "./components/WatchedMoviesList";
 import ErrorMessage from "./components/ErrorMessage";
 import Main from "./components/Main";
 import SelectedMovieDetails from "./components/SelectedMovieDetails";
+import { useMovies } from "./hooks/useMovies";
 
 // Helper function to calculate the average of an array
 export const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
   const [query, setQuery] = useState("breaking");
-  const [movies, setMovies] = useState([]);
-  // const [watched, setWatched] = useState([]);
-  const [error, setError] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   // Best Practice: Initializing state from localStorage for data persistence
@@ -29,50 +26,15 @@ export default function App() {
     const storedWatched = localStorage.getItem("watchedMovies");
     return storedWatched ? JSON.parse(storedWatched) : [];
   });
+
+  // 📝 Use the custom hook to handle all movie fetching logic
+  const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
+
   // useEffect to save the watched list to localStorage whenever it changes
   useEffect(() => {
     // We stringify the array because localStorage only stores strings
     localStorage.setItem("watchedMovies", JSON.stringify(watched));
   }, [watched]);
-  //call omdb movie api with useEffect
-  const API_KEY = "b793bcba";
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchMovies = async () => {
-      setError("");
-      setIsLoading(true);
-      try {
-        const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error("Something went wrong with the API request!");
-        const data = await res.json();
-        if (data.Response === "False") {
-          throw new Error(data.Error || "Movies not found!");
-        }
-        setMovies(data.Search || []);
-        setError("");
-      } catch (err) {
-        //set only if its not a abort error
-        if (err.name !== "AbortError") {
-          setError(err.message || "An unknown error occurred.");
-          setMovies([]);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (query.length < 3) {
-      setMovies([]);
-      setError("Please enter at least 3 characters to search.");
-      return;
-    }
-    handleCloseMovie();
-    fetchMovies();
-    return () => {
-      controller.abort(); // Cleanup the fetch request on component unmount
-    };
-  }, [query]);
 
   // Function to handle movie selection
   const handleSelectedMovie = (imdbID) => {
@@ -80,9 +42,9 @@ export default function App() {
     setSelectedMovie((prevId) => (prevId === imdbID ? null : imdbID));
   };
   // Function to close the movie details panel
-  const handleCloseMovie = () => {
+  function handleCloseMovie() {
     setSelectedMovie(null);
-  };
+  }
 
   // 📝 New function: handles removing a movie from the watched list
   const handleRemoveWatched = (imdbID) => {
