@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NavBar from "./components/NavBar";
 import Loader from "./components/Loader";
 import Total from "./components/Total";
@@ -11,6 +11,7 @@ import ErrorMessage from "./components/ErrorMessage";
 import Main from "./components/Main";
 import SelectedMovieDetails from "./components/SelectedMovieDetails";
 import { useMovies } from "./hooks/useMovies";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 // Helper function to calculate the average of an array
 export const average = (arr) =>
@@ -19,22 +20,10 @@ export const average = (arr) =>
 export default function App() {
   const [query, setQuery] = useState("breaking");
   const [selectedMovie, setSelectedMovie] = useState(null);
-
-  // Best Practice: Initializing state from localStorage for data persistence
-  // We use a function to ensure this logic runs only once on initial render.
-  const [watched, setWatched] = useState(() => {
-    const storedWatched = localStorage.getItem("watchedMovies");
-    return storedWatched ? JSON.parse(storedWatched) : [];
-  });
+  const [watched, setWatched] = useLocalStorage([], "watchedMovies");
 
   // 📝 Use the custom hook to handle all movie fetching logic
   const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
-
-  // useEffect to save the watched list to localStorage whenever it changes
-  useEffect(() => {
-    // We stringify the array because localStorage only stores strings
-    localStorage.setItem("watchedMovies", JSON.stringify(watched));
-  }, [watched]);
 
   // Function to handle movie selection
   const handleSelectedMovie = (imdbID) => {
