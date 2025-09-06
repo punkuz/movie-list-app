@@ -3,8 +3,18 @@ import { useEffect, useRef } from "react";
 export default function Search({ query, setQuery }) {
   const inputEl = useRef(null);
   useEffect(() => {
-    inputEl.current.focus(); // Focus the input element when the component mounts
-  }, []);
+    function cb(e) {
+      if (document.activeElement === inputEl.current) return;
+      if (e.key === "Enter") {
+        inputEl.current.focus();
+        setQuery("");
+      }
+    }
+    document.addEventListener("keydown", cb);
+    return () => {
+      document.removeEventListener("keydown", cb);
+    };
+  }, [setQuery]);
   return (
     <input
       className='search'
