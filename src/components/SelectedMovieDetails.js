@@ -28,7 +28,7 @@ export default function SelectedMovieDetails({
   } = movieDetails;
   const API_KEY = "b793bcba";
 
-  //// useEffect to fetch details of a specific movie
+  // useEffect to fetch details of a specific movie
   useEffect(() => {
     const fetchMovieDetails = async () => {
       setIsLoading(true);
@@ -76,6 +76,20 @@ export default function SelectedMovieDetails({
       onCloseMovie();
     }
   }
+
+  // add to close movie when escape is pressed
+    useEffect(() => {
+      function cb(e) {
+        if (e.key === "Escape") {
+          onCloseMovie();
+        }
+      }
+      document.addEventListener("keydown", cb);
+      //cleanup
+      return () => {
+        document.removeEventListener("keydown", cb);
+      };
+    }, [onCloseMovie]);
 
   return (
     <div className='details'>
