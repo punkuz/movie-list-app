@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ErrorMessage from "./ErrorMessage";
 import Loader from "./Loader";
+import { useKey } from "../hooks/useKey";
 
 export default function SelectedMovieDetails({
   movieId,
@@ -78,18 +79,7 @@ export default function SelectedMovieDetails({
   }
 
   // add to close movie when escape is pressed
-    useEffect(() => {
-      function cb(e) {
-        if (e.key === "Escape") {
-          onCloseMovie();
-        }
-      }
-      document.addEventListener("keydown", cb);
-      //cleanup
-      return () => {
-        document.removeEventListener("keydown", cb);
-      };
-    }, [onCloseMovie]);
+  useKey("Escape", onCloseMovie);
 
   return (
     <div className='details'>
